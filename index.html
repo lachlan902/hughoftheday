@@ -6,52 +6,86 @@
 
 <style>
     body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background-color: #f4f4f4;
         margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #dbeafe, #f0fdf4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .app {
+        background: white;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        text-align: center;
+        width: 320px;
     }
 
     h1 {
-        margin-top: 40px;
-        font-size: 2.5em;
+        margin: 0;
+        font-size: 24px;
     }
 
     img {
-        margin-top: 20px;
-        max-width: 80%;
-        border-radius: 12px;
+        width: 100%;
+        border-radius: 15px;
+        margin-top: 15px;
     }
 
     button {
-        margin-top: 20px;
-        padding: 10px 15px;
+        margin-top: 15px;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        background: #3b82f6;
+        color: white;
         font-size: 16px;
         cursor: pointer;
     }
 
-    a {
-        display: block;
-        margin-top: 20px;
-        font-size: 18px;
-        text-decoration: none;
-        color: blue;
+    button:hover {
+        background: #2563eb;
+    }
+
+    .secondary {
+        background: #e5e7eb;
+        color: black;
+    }
+
+    .secondary:hover {
+        background: #d1d5db;
+    }
+
+    .info {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .message {
+        font-weight: bold;
+        margin-top: 5px;
     }
 </style>
 </head>
 
 <body>
 
-<h1>Hugh of the Day</h1>
+<div class="app">
+    <h1>Hugh of the Day</h1>
 
-<img id="hughImage" src="" alt="Loading Hugh...">
+    
 
-<button onclick="loadRandomHugh()">🎲 Random Hugh</button>
+    <button onclick="loadRandomHugh()">🎲 Random Hugh</button>
+    <button class="secondary" onclick="goArchive()">📅 Archive</button>
 
-<p id="progress"></p>
-<p id="message" style="font-weight: bold;"></p>
-
-<a href="archive.html">View Archive</a>
+    <div class="info" id="progress"></div>
+    <div class="message" id="message"></div>
+</div>
 
 <script>
     const hughFiles = [
@@ -80,13 +114,13 @@
 
     function updateProgress() {
         document.getElementById("progress").innerText =
-            `Seen ${currentIndex} / ${shuffled.length} Hughs`;
+            `Seen ${currentIndex} / ${shuffled.length}`;
     }
 
     function loadRandomHugh() {
         if (currentIndex >= shuffled.length) {
             document.getElementById("message").innerText =
-                "✅ You've seen all Hughs! Reshuffling...";
+                "✅ Seen all Hughs! Reshuffling...";
             resetShuffle();
         } else {
             document.getElementById("message").innerText = "";
@@ -94,45 +128,33 @@
 
         document.getElementById("hughImage").src = shuffled[currentIndex];
         currentIndex++;
-
         updateProgress();
     }
 
     function getTodayFilename() {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        return `${yyyy}${mm}${dd}`;
+        const d = new Date();
+        return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    function loadTodayImage() {
-        const baseName = getTodayFilename();
+    function loadToday() {
+        const base = getTodayFilename();
         const formats = [".jpg", ".png", ".jpeg"];
-        let found = false;
 
         formats.forEach(ext => {
-            if (found) return;
-
             const img = new Image();
-            img.src = baseName + ext;
-
+            img.src = base + ext;
             img.onload = () => {
                 document.getElementById("hughImage").src = img.src;
-                found = true;
             };
         });
+    }
 
-        setTimeout(() => {
-            if (!found) {
-                document.getElementById("hughImage").alt =
-                    "No Hugh for today yet!";
-            }
-        }, 500);
+    function goArchive() {
+        window.location.href = "archive.html";
     }
 
     resetShuffle();
-    loadTodayImage();
+    loadToday();
 </script>
 
 </body>
