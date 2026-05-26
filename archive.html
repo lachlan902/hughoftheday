@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hugh Archive</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f4f4f4;
+    }
+
+    h1 {
+        margin-top: 30px;
+    }
+
+    img {
+        margin-top: 20px;
+        max-width: 80%;
+        border-radius: 10px;
+    }
+
+    .controls {
+        margin-top: 20px;
+    }
+
+    button, input {
+        padding: 10px;
+        margin: 5px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Hugh Archive</h1>
+
+<div class="controls">
+    <button onclick="prevDay()">⬅ Previous</button>
+    <button onclick="nextDay()">Next ➡</button><br>
+    <input type="date" id="datePicker" onchange="jumpToDate()">
+</div>
+
+<h2 id="dateTitle"></h2>
+<img id="hughImage" src="" alt="Hugh image">
+
+<script>
+    // List your available files here
+    const files = [
+        "20260524.png",
+        "20260525.png",
+        "20260526.jpg"
+    ];
+
+    // Convert filenames into archive object
+    const archive = {};
+    files.forEach(file => {
+        const dateStr = file.split('.')[0];
+        const formatted = dateStr.slice(0,4) + "-" + dateStr.slice(4,6) + "-" + dateStr.slice(6,8);
+        archive[formatted] = file;
+    });
+
+    const dates = Object.keys(archive).sort();
+    let currentIndex = dates.length - 1;
+
+    function displayDate(index) {
+        const date = dates[index];
+        document.getElementById("dateTitle").innerText = date;
+        document.getElementById("hughImage").src = archive[date];
+        document.getElementById("datePicker").value = date;
+    }
+
+    function prevDay() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            displayDate(currentIndex);
+        }
+    }
+
+    function nextDay() {
+        if (currentIndex < dates.length - 1) {
+            currentIndex++;
+            displayDate(currentIndex);
+        }
+    }
+
+    function jumpToDate() {
+        const selected = document.getElementById("datePicker").value;
+        const index = dates.indexOf(selected);
+        if (index !== -1) {
+            currentIndex = index;
+            displayDate(index);
+        } else {
+            alert("No Hugh for that date.");
+        }
+    }
+
+    // Load newest image on start
+    displayDate(currentIndex);
+</script>
+
+</body>
+</html>
