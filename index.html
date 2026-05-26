@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hugh of the Day</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f4f4f4;
+        margin: 0;
+    }
+
+    h1 {
+        margin-top: 40px;
+        font-size: 2.5em;
+    }
+
+    img {
+        margin-top: 20px;
+        max-width: 80%;
+        border-radius: 12px;
+    }
+
+    a {
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 18px;
+        text-decoration: none;
+        color: blue;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Hugh of the Day</h1>
+
+<img id="hughImage" src="" alt="Today's Hugh">
+
+<br>
+<a href="archive.html">View Archive</a>
+
+<script>
+    function getTodayFilename() {
+        const today = new Date();
+
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+
+        return `${yyyy}${mm}${dd}`;
+    }
+
+    function loadTodayImage() {
+        const baseName = getTodayFilename();
+
+        // Try common formats
+        const formats = [".jpg", ".png", ".jpeg"];
+        let found = false;
+
+        formats.forEach(ext => {
+            if (found) return;
+
+            const img = new Image();
+            img.src = baseName + ext;
+
+            img.onload = () => {
+                document.getElementById("hughImage").src = img.src;
+                found = true;
+            };
+        });
+
+        // Fallback if nothing loads after short delay
+        setTimeout(() => {
+            if (!found) {
+                document.getElementById("hughImage").alt = "No Hugh for today yet!";
+            }
+        }, 1000);
+    }
+
+    loadTodayImage();
+</script>
+
+</body>
+</html>
