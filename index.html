@@ -39,6 +39,12 @@ img {
         text-decoration: none;
         color: blue;
     }
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centers image + button together */
+}    
 </style>
 </head>
 
@@ -46,9 +52,12 @@ img {
 
 <h1>Hugh of the Day</h1>
 
-<img id="hughImage" src="" alt="Loading Hugh...">
 
-<button onclick="loadRandomHugh()">🎲 Random Hugh</button>
+<div class="content">
+    <img id="hughImage" src="" alt="Loading Hugh...">
+    <button onclick="loadRandomHugh()">🎲 Random Hugh</button>
+</div>
+
 
 <p id="progress"></p>
 <p id="message" style="font-weight: bold;"></p>
