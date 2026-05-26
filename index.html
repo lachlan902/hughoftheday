@@ -23,8 +23,15 @@
         border-radius: 12px;
     }
 
+    button {
+        margin-top: 20px;
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
     a {
-        display: inline-block;
+        display: block;
         margin-top: 20px;
         font-size: 18px;
         text-decoration: none;
@@ -37,26 +44,70 @@
 
 <h1>Hugh of the Day</h1>
 
-<img id="hughImage" src="" alt="Today's Hugh">
+<img id="hughImage" src="" alt="Loading Hugh...">
 
-<br>
+<button onclick="loadRandomHugh()">🎲 Random Hugh</button>
+
+<p id="progress"></p>
+<p id="message" style="font-weight: bold;"></p>
+
 <a href="archive.html">View Archive</a>
 
 <script>
+    const hughFiles = [
+        "20260524.png",
+        "20260525.png",
+        "20260526.jpg"
+    ];
+
+    let shuffled = [];
+    let currentIndex = 0;
+
+    function shuffle(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function resetShuffle() {
+        shuffled = shuffle(hughFiles);
+        currentIndex = 0;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        document.getElementById("progress").innerText =
+            `Seen ${currentIndex} / ${shuffled.length} Hughs`;
+    }
+
+    function loadRandomHugh() {
+        if (currentIndex >= shuffled.length) {
+            document.getElementById("message").innerText =
+                "✅ You've seen all Hughs! Reshuffling...";
+            resetShuffle();
+        } else {
+            document.getElementById("message").innerText = "";
+        }
+
+        document.getElementById("hughImage").src = shuffled[currentIndex];
+        currentIndex++;
+
+        updateProgress();
+    }
+
     function getTodayFilename() {
         const today = new Date();
-
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
-
         return `${yyyy}${mm}${dd}`;
     }
 
     function loadTodayImage() {
         const baseName = getTodayFilename();
-
-        // Try common formats
         const formats = [".jpg", ".png", ".jpeg"];
         let found = false;
 
@@ -72,16 +123,18 @@
             };
         });
 
-        // Fallback if nothing loads after short delay
         setTimeout(() => {
             if (!found) {
-                document.getElementById("hughImage").alt = "No Hugh for today yet!";
+                document.getElementById("hughImage").alt =
+                    "No Hugh for today yet!";
             }
-        }, 1000);
+        }, 500);
     }
 
+    resetShuffle();
     loadTodayImage();
 </script>
 
 </body>
 </html>
+``
