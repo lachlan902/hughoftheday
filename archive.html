@@ -29,6 +29,11 @@
         padding: 10px;
         margin: 5px;
     }
+
+    a {
+        display: block;
+        margin-top: 20px;
+    }
 </style>
 </head>
 
@@ -43,21 +48,23 @@
 </div>
 
 <h2 id="dateTitle"></h2>
-<img id="hughImage" src="" alt="Hugh image">
+
+<img id="hughImage" src="">
+
+<a href="index.html">Back to Today</a>
 
 <script>
-    // List your available files here
     const files = [
         "20260524.png",
         "20260525.png",
         "20260526.jpg"
     ];
 
-    // Convert filenames into archive object
     const archive = {};
+
     files.forEach(file => {
-        const dateStr = file.split('.')[0];
-        const formatted = dateStr.slice(0,4) + "-" + dateStr.slice(4,6) + "-" + dateStr.slice(6,8);
+        const d = file.split('.')[0];
+        const formatted = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
         archive[formatted] = file;
     });
 
@@ -88,6 +95,7 @@
     function jumpToDate() {
         const selected = document.getElementById("datePicker").value;
         const index = dates.indexOf(selected);
+
         if (index !== -1) {
             currentIndex = index;
             displayDate(index);
@@ -96,7 +104,6 @@
         }
     }
 
-    // Load newest image on start
     displayDate(currentIndex);
 </script>
 
