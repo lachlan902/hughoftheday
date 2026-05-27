@@ -42,8 +42,6 @@
         display: block;
         margin-top: 20px;
         font-size: 18px;
-        text-decoration: none;
-        color: blue;
     }
 </style>
 </head>
@@ -53,23 +51,23 @@
 <h1>Hugh of the Day</h1>
 
 <div class="content">
-    <img id="hughImage" src="" alt="Loading Hugh...">
+    <!-- ✅ FIX: IMAGE ADDED -->
+    <img id="hughImage" src="" alt="Hugh">
+    
     <button onclick="loadRandomHugh()">🎲 Random Hugh</button>
 </div>
 
 <p id="progress"></p>
-<p id="message" style="font-weight: bold;"></p>
+<p id="message"></p>
 
+<!-- ✅ FIX: LINK -->
 <a href="archive.html">View Archive</a>
 
 <script>
-
-// -------- STEP 1 --------
 function formatDate(date) {
     return `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
 }
 
-// -------- STEP 2 --------
 function checkImage(src) {
     return new Promise(resolve => {
         const img = new Image();
@@ -81,17 +79,16 @@ function checkImage(src) {
 
 async function findAllImages() {
     const images = [];
-    const start = new Date(2026, 5, 24); // 🔁 change to your first date
+    const start = new Date(2026, 4, 24); // ✅ set to your FIRST image
     const today = new Date();
 
-    const formats = [".jpg", ".png", ".jpeg"];
+    const formats = [".jpg", ".png"];
 
     for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
         const base = formatDate(d);
 
         for (let ext of formats) {
             const file = base + ext;
-
             if (await checkImage(file)) {
                 images.push(file);
                 break;
@@ -102,35 +99,28 @@ async function findAllImages() {
     return images;
 }
 
-// -------- RANDOM SYSTEM --------
 let hughFiles = [];
 let shuffled = [];
 let currentIndex = 0;
 
-function shuffle(array) {
-    let arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
+function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
 }
 
 function resetShuffle() {
-    shuffled = shuffle(hughFiles);
+    shuffled = shuffle([...hughFiles]);
     currentIndex = 0;
     updateProgress();
 }
 
 function updateProgress() {
     document.getElementById("progress").innerText =
-        `Seen ${currentIndex} / ${shuffled.length} Hughs`;
+        `Seen ${currentIndex} / ${shuffled.length}`;
 }
 
 function loadRandomHugh() {
     if (currentIndex >= shuffled.length) {
-        document.getElementById("message").innerText =
-            "✅ You've seen all Hughs! Reshuffling...";
+        document.getElementById("message").innerText = "✅ Seen all! Resetting...";
         resetShuffle();
     } else {
         document.getElementById("message").innerText = "";
@@ -141,21 +131,19 @@ function loadRandomHugh() {
     updateProgress();
 }
 
-// -------- TODAY IMAGE --------
 function loadTodayImage() {
-    const base = formatDate(new Date());
-    const formats = [".jpg", ".png", ".jpeg"];
+    const today = formatDate(new Date());
+    const formats = [".jpg", ".png"];
 
     formats.forEach(ext => {
         const img = new Image();
-        img.src = base + ext;
+        img.src = today + ext;
         img.onload = () => {
             document.getElementById("hughImage").src = img.src;
         };
     });
 }
 
-// -------- INIT --------
 async function init() {
     hughFiles = await findAllImages();
     resetShuffle();
@@ -163,7 +151,6 @@ async function init() {
 }
 
 init();
-
 </script>
 
 </body>
