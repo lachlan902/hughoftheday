@@ -11,29 +11,14 @@
         background-color: #f4f4f4;
     }
 
-    h1 {
-        margin-top: 30px;
-    }
-
     img {
         margin-top: 20px;
         width: 400px;
         max-width: 90%;
-        height: auto;
         border-radius: 10px;
     }
 
     .controls {
-        margin-top: 20px;
-    }
-
-    button, input {
-        padding: 10px;
-        margin: 5px;
-    }
-
-    a {
-        display: block;
         margin-top: 20px;
     }
 </style>
@@ -44,25 +29,24 @@
 <h1>Hugh Archive</h1>
 
 <div class="controls">
-    <button onclick="prevDay()">⬅ Previous</button>
-    <button onclick="nextDay()">Next ➡</button><br>
+    <button onclick="prevDay()">⬅</button>
+    <button onclick="nextDay()">➡</button><br>
     <input type="date" id="datePicker" onchange="jumpToDate()">
 </div>
 
 <h2 id="dateTitle"></h2>
 
+<!-- ✅ FIX: IMAGE -->
 <img id="hughImage" src="">
 
+<!-- ✅ FIX: LINK -->
 <a href="index.html">Back to Today</a>
 
 <script>
-
-// -------- STEP 1 --------
 function formatDate(date) {
-    return `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 }
 
-// -------- STEP 2 --------
 function checkImage(src) {
     return new Promise(resolve => {
         const img = new Image();
@@ -74,17 +58,17 @@ function checkImage(src) {
 
 async function findAllImages() {
     const images = [];
-    const start = new Date(2026, 5, 24);
+    const start = new Date(2026, 4, 24);
     const today = new Date();
 
-    const formats = [".jpg", ".png", ".jpeg"];
+    const formats = [".jpg", ".png"];
 
     for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
-        const base = formatDate(d);
+        const base = 
+            `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
 
         for (let ext of formats) {
             const file = base + ext;
-
             if (await checkImage(file)) {
                 images.push(file);
                 break;
@@ -95,62 +79,50 @@ async function findAllImages() {
     return images;
 }
 
-// -------- ARCHIVE --------
-let archiveData = {};
+let archive = {};
 let dates = [];
 let currentIndex = 0;
 
 function displayDate(index) {
     const date = dates[index];
     document.getElementById("dateTitle").innerText = date;
-    document.getElementById("hughImage").src = archiveData[date];
+    document.getElementById("hughImage").src = archive[date];
     document.getElementById("datePicker").value = date;
 }
 
 function prevDay() {
-    if (currentIndex > 0) {
-        currentIndex--;
-        displayDate(currentIndex);
-    }
+    if (currentIndex > 0) displayDate(--currentIndex);
 }
 
 function nextDay() {
-    if (currentIndex < dates.length - 1) {
-        currentIndex++;
-        displayDate(currentIndex);
-    }
+    if (currentIndex < dates.length - 1) displayDate(++currentIndex);
 }
 
 function jumpToDate() {
-    const selected = document.getElementById("datePicker").value;
-    const index = dates.indexOf(selected);
-
-    if (index !== -1) {
-        currentIndex = index;
-        displayDate(index);
-    } else {
-        alert("No Hugh for that date.");
+    const val = document.getElementById("datePicker").value;
+    const i = dates.indexOf(val);
+    if (i !== -1) {
+        currentIndex = i;
+        displayDate(i);
     }
 }
 
-// -------- INIT --------
-async function initArchive() {
+async function init() {
     const files = await findAllImages();
 
-    files.forEach(file => {
-        const d = file.split('.')[0];
-        const formatted = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
-        archiveData[formatted] = file;
+    files.forEach(f => {
+        const d = f.split('.')[0];
+        const formatted =
+          `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+        archive[formatted] = f;
     });
 
-    dates = Object.keys(archiveData).sort();
+    dates = Object.keys(archive).sort();
     currentIndex = dates.length - 1;
-
     displayDate(currentIndex);
 }
 
-initArchive();
-
+init();
 </script>
 
 </body>
