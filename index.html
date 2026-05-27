@@ -106,12 +106,17 @@ function checkImage(src) {
         img.onerror = () => resolve(false);
     });
 }
+   
+let hughFiles = [];
 
-    const hughFiles = [
-        "20260524.png",
-        "20260525.png",
-        "20260526.jpg"
-    ];
+async function init() {
+    hughFiles = await findAllImages();
+
+    resetShuffle();
+    loadTodayImage();
+}
+
+init();
 
     let shuffled = [];
     let currentIndex = 0;
