@@ -66,6 +66,42 @@ img {
     const dd = String(date.getDate()).padStart(2, '0');
     return `${yyyy}${mm}${dd}`;
 }
+
+    
+async function findAllImages() {
+    const images = [];
+    const start = new Date(2026, 4, 1); // change to your first date (month is 0-based)
+    const today = new Date();
+
+    const formats = [".jpg", ".png", ".jpeg"];
+
+    for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+        const base = formatDate(d);
+
+        for (let ext of formats) {
+            const file = base + ext;
+
+            const exists = await checkImage(file);
+            if (exists) {
+                images.push(file);
+                break;
+            }
+        }
+    }
+
+    return images;
+}
+
+function checkImage(src) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.src = src;
+
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+    });
+}
+
     
     const files = [
         "20260524.png",
