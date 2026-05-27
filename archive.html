@@ -15,15 +15,12 @@
         margin-top: 30px;
     }
 
-
-img {
-    margin-top: 20px;
-    width: 400px;       /* same fixed medium size */
-    max-width: 90%;     /* responsive for phones */
-    height: auto;       /* keeps proportions */
-    border-radius: 10px;
-}
-
+    img {
+        margin-top: 20px;
+        width: 400px;
+        max-width: 90%;
+        height: auto;
+        border-radius: 10px;
     }
 
     .controls {
@@ -60,17 +57,24 @@ img {
 
 <script>
 
-    function formatDate(date) {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}${mm}${dd}`;
+// -------- STEP 1 --------
+function formatDate(date) {
+    return `${date.getFullYear()}${String(date.getMonth()+1).padStart(2,'0')}${String(date.getDate()).padStart(2,'0')}`;
 }
 
-    
+// -------- STEP 2 --------
+function checkImage(src) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+    });
+}
+
 async function findAllImages() {
     const images = [];
-    const start = new Date(2026, 4, 1); // change to your first date (month is 0-based)
+    const start = new Date(2026, 5, 24);
     const today = new Date();
 
     const formats = [".jpg", ".png", ".jpeg"];
@@ -81,8 +85,7 @@ async function findAllImages() {
         for (let ext of formats) {
             const file = base + ext;
 
-            const exists = await checkImage(file);
-            if (exists) {
+            if (await checkImage(file)) {
                 images.push(file);
                 break;
             }
@@ -92,85 +95,62 @@ async function findAllImages() {
     return images;
 }
 
-function checkImage(src) {
-    return new Promise(resolve => {
-        const img = new Image();
-        img.src = src;
+// -------- ARCHIVE --------
+let archiveData = {};
+let dates = [];
+let currentIndex = 0;
 
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-    });
-}   
+function displayDate(index) {
+    const date = dates[index];
+    document.getElementById("dateTitle").innerText = date;
+    document.getElementById("hughImage").src = archiveData[date];
+    document.getElementById("datePicker").value = date;
+}
 
-let files = [];
+function prevDay() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        displayDate(currentIndex);
+    }
+}
 
+function nextDay() {
+    if (currentIndex < dates.length - 1) {
+        currentIndex++;
+        displayDate(currentIndex);
+    }
+}
+
+function jumpToDate() {
+    const selected = document.getElementById("datePicker").value;
+    const index = dates.indexOf(selected);
+
+    if (index !== -1) {
+        currentIndex = index;
+        displayDate(index);
+    } else {
+        alert("No Hugh for that date.");
+    }
+}
+
+// -------- INIT --------
 async function initArchive() {
-    files = await findAllImages();
-
-    const archive = {};
+    const files = await findAllImages();
 
     files.forEach(file => {
         const d = file.split('.')[0];
         const formatted = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
-        archive[formatted] = file;
+        archiveData[formatted] = file;
     });
 
-    const dates = Object.keys(archive).sort();
+    dates = Object.keys(archiveData).sort();
     currentIndex = dates.length - 1;
-
-    window.archiveData = archive;
-    window.dates = dates;
 
     displayDate(currentIndex);
 }
 
 initArchive();
 
-    const archive = {};
-
-    files.forEach(file => {
-        const d = file.split('.')[0];
-        const formatted = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
-        archive[formatted] = file;
-    });
-
-    const dates = Object.keys(archive).sort();
-    let currentIndex = dates.length - 1;
-
-    function displayDate(index) {
-        const date = dates[index];
-        document.getElementById("dateTitle").innerText = date;
-        document.getElementById("hughImage").src = archive[date];
-        document.getElementById("datePicker").value = date;
-    }
-
-    function prevDay() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            displayDate(currentIndex);
-        }
-    }
-
-    function nextDay() {
-        if (currentIndex < dates.length - 1) {
-            currentIndex++;
-            displayDate(currentIndex);
-        }
-    }
-
-    function jumpToDate() {
-        const selected = document.getElementById("datePicker").value;
-        const index = dates.indexOf(selected);
-
-        if (index !== -1) {
-            currentIndex = index;
-            displayDate(index);
-        } else {
-            alert("No Hugh for that date.");
-        }
-    }
-
-    displayDate(currentIndex);
 </script>
 
 </body>
