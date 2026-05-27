@@ -100,14 +100,31 @@ function checkImage(src) {
         img.onload = () => resolve(true);
         img.onerror = () => resolve(false);
     });
+}   
+
+let files = [];
+
+async function initArchive() {
+    files = await findAllImages();
+
+    const archive = {};
+
+    files.forEach(file => {
+        const d = file.split('.')[0];
+        const formatted = `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6,8)}`;
+        archive[formatted] = file;
+    });
+
+    const dates = Object.keys(archive).sort();
+    currentIndex = dates.length - 1;
+
+    window.archiveData = archive;
+    window.dates = dates;
+
+    displayDate(currentIndex);
 }
 
-    
-    const files = [
-        "20260524.png",
-        "20260525.png",
-        "20260526.jpg"
-    ];
+initArchive();
 
     const archive = {};
 
