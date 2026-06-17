@@ -131,24 +131,21 @@ function loadRandomHugh() {
     updateProgress();
 }
 
-function loadTodayImage() {
-    const today = formatDate(new Date());
-    const formats = [".jpg", ".png"];
-
-    formats.forEach(ext => {
-        const img = new Image();
-        img.src = today + ext;
-        img.onload = () => {
-            document.getElementById("hughImage").src = img.src;
-        };
-    });
-}
 
 async function init() {
     hughFiles = await findAllImages();
+
+    // ✅ Sort newest → oldest
+    hughFiles.sort().reverse();
+
+    // ✅ Show latest image
+    if (hughFiles.length > 0) {
+        document.getElementById("hughImage").src = hughFiles[0];
+    }
+
     resetShuffle();
-    loadTodayImage();
 }
+
 
 init();
 </script>
